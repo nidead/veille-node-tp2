@@ -150,7 +150,7 @@ app.get('/vider', (req, res) => {
 		})
 	res.redirect('/adresse')
 })
-
+//ajax modifier
 app.post('/ajax_modifier', (req, res) => {
 	console.log('route /ajax_modifier')
 	req.body._id = 	ObjectID(req.body._id)
@@ -161,7 +161,7 @@ app.post('/ajax_modifier', (req, res) => {
 		 res.send(JSON.stringify(req.body))
 	 })
 })
-
+//ajax detruire
 app.post('/ajax_detruire', (req, res) => {
  console.log('route /detruire')
  // console.log('util = ' + util.inspect(req.params));	
@@ -178,7 +178,7 @@ if (err) return console.log(err)
  })
 })
 
-
+//ajax ajouter
 app.post('/ajax_ajouter', (req,res) => {
 console.log('route /ajax_ajouter')	
  db.collection('adresse').save(req.body, (err, result) => {
@@ -189,7 +189,7 @@ console.log('route /ajax_ajouter')
  })
 })
 
-
+//chat
 app.get('/chat', (req, res) =>{
 	res.render("socket_vue.ejs");
 })
