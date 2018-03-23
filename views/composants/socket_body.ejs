@@ -1,0 +1,119 @@
+<h2>Clavardage</h2>
+<section id="enregistrement">
+ <input type="text">
+ <button onclick="enregistrement()">Enregistrement</button>
+</section>
+
+<section id='chat' style="display: none">
+	<table id='list_user'></table>
+	<table id='message'></table>
+	<section id="message_a_transmettre">
+		<input type="text" name="txtMessage"><button onclick="transmettre_un_message()">Transmettre</button>
+	</section>
+</section>
+
+
+
+<script type="text/javascript">
+ /* 
+Pour établir une communication socket il faut un premier appel de
+ la fonction io()
+ Cette fonction est incluse dans la librairie socket.io. 
+ Cette fonction déclenche un événement connect vers le serveur
+ */
+ let socket;
+ window.onload = ()=>{
+ socket = io()
+
+ // console.log(socket.id);
+ socket.on('connect', function(){
+ console.log('Le socket id = ' + socket.id); 
+ /* l'événement ackUser a été transmis par le serveur */ 
+ socket.on('valide_user', function(data){
+ 		console.log('data en provenance du serveur = ' + data.user)
+
+ 		let elmEnregistrement = document.getElementById('enregistrement');
+ 		elmEnregistrement.style.display='none';
+
+ 		let elmChat = document.getElementById('chat');
+ 		elmChat.style.display='flex';
+
+ })
+
+/////////////////////////////////////////////////////
+ socket.on('diffuser_list_user', function(data){
+
+ 	affiche_table_users(data);
+ 
+ })
+
+
+/////////////////////////////////////////////////////////////
+ socket.on('valide_message', function(data){
+ 	console.log("valide_message = " + data);
+ 	afficher_mon_message(data, '#0f0');
+ })
+//////////////////////////////////////////////////////////////
+ socket.on('diffuser_message', function(data){
+ 	console.log("diffuser_message = " + data);
+ 	afficher_mon_message(data, '#00f');
+ })
+
+
+ //////////////////////////////////////////////////////////////////////////////
+
+
+
+ });
+ }
+/* --------------------------FIN ON LOAD-------------------------------- */
+
+
+ function enregistrement(){
+ let  elmUser = document.querySelector('#enregistrement input')
+ console.log("user value = "+elmUser.value)
+ /* l'événement « setUser » est transmit avec un objet 
+ */
+ socket.emit('setUser', {user : elmUser.value})
+ }
+
+
+ function transmettre_un_message(){
+let elmMessage = document.querySelector('#message_a_transmettre input');
+console.log("message value = "+elmMessage.value)
+socket.emit('setMessage', {message: elmMessage.value})
+ }
+
+ function affiche_table_users(data){
+
+ 	let sChaine = ''
+ 	for(id in data){
+ 		sChaine += '<tr>'
+ 		+'<td>' + id + '</td>'
+ 		+ '<td>' + data[id] + '</td>'
+ 		+ '</tr>'
+
+
+ 	}
+ 	let elmListUser = document.getElementById('list_user');
+ 		elmListUser.innerHTML = sChaine;
+ 		
+ }
+
+ function afficher_mon_message(data, couleur){
+ 	console.log(data);
+
+ 	let elmTr = document.createElement("TR")
+	
+	let sMessage="<td style='background-color:"+ couleur +";'>" + data.user  +"</td>"
+				+"<td>==></td>"
+				+"<td>" + data.message  +"</td>"
+	
+	elmTr.innerHTML=sMessage				
+
+	let elmMessage = document.getElementById("message")
+	
+	elmMessage.appendChild(elmTr)
+
+ }
+</script>
